@@ -29,9 +29,6 @@ class CompressRepeatedActionsTest(unittest.TestCase):
   def test_compress(self):
     rewards = np.random.uniform(size=605)
 
-    # with open('game.json','rb') as outfile:
-    #   game = pickle.load(outfile)
-
     with open('data/multishine/multishine.slp.pkl', 'rb')  as f:
       game = pickle.loads(zlib.decompress(f.read()))
 
@@ -40,6 +37,9 @@ class CompressRepeatedActionsTest(unittest.TestCase):
     compressed1 = data.compress_repeated_actions(game,rewards,embedder,604)
     compressed2 = data.compress_repeated_actions(game,rewards,embedder,0)
 
+    cs1 = compressed1.states['player'][1]['controller_state']
+    cs2 = compressed2.states['player'][1]['controller_state']
+
     def assert_equal_with_path(path, xs1, xs2):
       rx1 = reconstruct(xs1, compressed1.counts)
       rx2 = reconstruct(xs2, compressed2.counts)
@@ -47,7 +47,7 @@ class CompressRepeatedActionsTest(unittest.TestCase):
 
     tree.map_structure_with_path(
       assert_equal_with_path,
-      compressed1.states, compressed2.states)
+      cs1, cs2)
 
 if __name__ == '__main__':
   unittest.main(failfast=True)
